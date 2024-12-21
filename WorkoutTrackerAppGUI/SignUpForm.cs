@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Data.SqlClient;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -16,30 +17,45 @@ namespace WorkoutTrackerAppGUI
     {
         private readonly DatabaseManager _databaseManager;
 
-        public SignUpForm(DatabaseManager databaseManager)
+        // Constructor accepting DatabaseManager as a parameter
+        public SignUpForm(DatabaseManager databaseManager = null)
         {
             InitializeComponent();
-            _databaseManager = databaseManager;
+
+            _databaseManager = databaseManager ?? throw new ArgumentNullException(nameof(databaseManager));
         }
 
         private void btnRegister_Click(object sender, EventArgs e)
         {
+            // Retrieve user input
             string username = txtUsername.Text;
             string password = txtPassword.Text;
+            string confirmPassword = txtConfirmPassword.Text;
             string email = txtEmail.Text;
 
-            if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password) || string.IsNullOrWhiteSpace(email))
+            // Validate input fields
+            if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password) ||
+                string.IsNullOrWhiteSpace(confirmPassword) || string.IsNullOrWhiteSpace(email))
             {
                 MessageBox.Show("All fields are required.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
+            // Confirm password validation
+            if (password != confirmPassword)
+            {
+                MessageBox.Show("Passwords do not match. Please try again.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
             try
             {
-                var newUser = User.Register("username", "raw_password", "email@example.com");
-                _databaseManager.AddUser(newUser); // Add new user to the database
+                // Create a new user with hashed password
+                var newUser = User.Register(username, password, email);
+                _databaseManager.AddUser(newUser); // Add the new user to the database
+
                 MessageBox.Show("User registered successfully!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                this.Close();
+                this.Close(); // Close the form after successful registration
             }
             catch (Exception ex)
             {
@@ -53,3 +69,5 @@ namespace WorkoutTrackerAppGUI
         }
     }
 }
+
+

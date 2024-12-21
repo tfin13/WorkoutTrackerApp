@@ -18,7 +18,7 @@ namespace WorkoutTrackerAppGUI
         public ProgressForm(DatabaseManager databaseManager)
         {
             InitializeComponent();
-            _databaseManager = databaseManager;
+            _databaseManager = databaseManager ?? throw new ArgumentNullException(nameof(databaseManager));
 
             // Link Load event to load progress entries
             this.Load += ProgressForm_Load;

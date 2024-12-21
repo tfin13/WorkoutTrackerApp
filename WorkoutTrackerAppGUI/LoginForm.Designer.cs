@@ -24,7 +24,7 @@
         {
             // Add initialization logic here if needed
             // Example: Clear the text fields on form load
-            txtUsername.Text = string.Empty;
+            txtEmail.Text = string.Empty;
             txtPassword.Text = string.Empty;
         }
 
@@ -36,23 +36,23 @@
         /// </summary>
         private void InitializeComponent()
         {
-            lblUsername = new Label();
+            lblEmail = new Label();
             lblPassword = new Label();
-            txtUsername = new TextBox();
+            txtEmail = new TextBox();
             txtPassword = new TextBox();
             btnLogin = new Button();
             btnExit = new Button();
             btnSignUp = new Button();
             SuspendLayout();
             // 
-            // lblUsername
+            // lblEmail
             // 
-            lblUsername.AutoSize = true;
-            lblUsername.Location = new Point(71, 95);
-            lblUsername.Name = "lblUsername";
-            lblUsername.Size = new Size(60, 15);
-            lblUsername.TabIndex = 0;
-            lblUsername.Text = "Username";
+            lblEmail.AutoSize = true;
+            lblEmail.Location = new Point(71, 95);
+            lblEmail.Name = "lblEmail";
+            lblEmail.Size = new Size(36, 15);
+            lblEmail.TabIndex = 0;
+            lblEmail.Text = "Email";
             // 
             // lblPassword
             // 
@@ -63,12 +63,12 @@
             lblPassword.TabIndex = 1;
             lblPassword.Text = "Password";
             // 
-            // txtUsername
+            // txtEmail
             // 
-            txtUsername.Location = new Point(137, 92);
-            txtUsername.Name = "txtUsername";
-            txtUsername.Size = new Size(306, 23);
-            txtUsername.TabIndex = 2;
+            txtEmail.Location = new Point(137, 92);
+            txtEmail.Name = "txtEmail";
+            txtEmail.Size = new Size(306, 23);
+            txtEmail.TabIndex = 2;
             // 
             // txtPassword
             // 
@@ -116,9 +116,9 @@
             Controls.Add(btnExit);
             Controls.Add(btnLogin);
             Controls.Add(txtPassword);
-            Controls.Add(txtUsername);
+            Controls.Add(txtEmail);
             Controls.Add(lblPassword);
-            Controls.Add(lblUsername);
+            Controls.Add(lblEmail);
             Name = "LoginForm";
             Text = "Login";
             Load += LoginForm_Load;
@@ -128,9 +128,9 @@
 
         #endregion
 
-        private Label lblUsername;
+        private Label lblEmail;
         private Label lblPassword;
-        private TextBox txtUsername;
+        private TextBox txtEmail;
         private TextBox txtPassword;
         private Button btnLogin;
         private Button btnExit;

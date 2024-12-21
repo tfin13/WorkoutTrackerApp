@@ -1,24 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using WorkoutTrackerAppGUI.DataAccess;
 using WorkoutTrackerAppGUI.Entities;
 
 namespace WorkoutTrackerAppGUI.BusinessLogic
 {
     public class WorkoutManager
     {
-        // Attributes
-        private readonly List<WorkoutRoutine> _workoutRoutines;
-        private readonly List<Exercise> _exercises;
+        // Dependency on DatabaseManager
+        private readonly DatabaseManager _databaseManager;
 
         // Constructor
-        public WorkoutManager()
+        public WorkoutManager(DatabaseManager databaseManager)
         {
-            _workoutRoutines = new List<WorkoutRoutine>();
-            _exercises = new List<Exercise>();
+            _databaseManager = databaseManager ?? throw new ArgumentNullException(nameof(databaseManager));
         }
-
-        // Methods
 
         // Add a new workout routine
         public void AddWorkoutRoutine(WorkoutRoutine routine)
@@ -26,13 +22,13 @@ namespace WorkoutTrackerAppGUI.BusinessLogic
             if (routine == null)
                 throw new ArgumentNullException(nameof(routine), "Workout routine cannot be null.");
 
-            _workoutRoutines.Add(routine);
+            _databaseManager.AddWorkoutRoutine(routine);
         }
 
         // Get a workout routine by ID
         public WorkoutRoutine GetWorkoutRoutineById(int routineId)
         {
-            var routine = _workoutRoutines.FirstOrDefault(r => r.RoutineId == routineId);
+            var routine = _databaseManager.GetWorkoutRoutineById(routineId);
             if (routine == null)
                 throw new KeyNotFoundException($"Workout routine with ID {routineId} not found.");
 
@@ -42,53 +38,40 @@ namespace WorkoutTrackerAppGUI.BusinessLogic
         // Remove a workout routine by ID
         public void RemoveWorkoutRoutine(int routineId)
         {
-            var routine = GetWorkoutRoutineById(routineId);
-            _workoutRoutines.Remove(routine);
+            var routine = GetWorkoutRoutineById(routineId); // Ensures routine exists
+            _databaseManager.DeleteWorkoutRoutine(routineId);
         }
 
         // Add an exercise to a specific workout routine
         public void AddExerciseToRoutine(int routineId, Exercise exercise)
         {
-            var routine = GetWorkoutRoutineById(routineId);
-            routine.AddExercise(exercise.Name);
+            if (exercise == null)
+                throw new ArgumentNullException(nameof(exercise), "Exercise cannot be null.");
+
+            var routine = GetWorkoutRoutineById(routineId); // Ensures routine exists
+            _databaseManager.AddExerciseToRoutine(routineId, exercise.Name);
         }
 
         // Remove an exercise from a workout routine
         public void RemoveExerciseFromRoutine(int routineId, string exerciseName)
         {
-            var routine = GetWorkoutRoutineById(routineId);
-            routine.RemoveExercise(exerciseName);
-        }
+            if (string.IsNullOrWhiteSpace(exerciseName))
+                throw new ArgumentException("Exercise name cannot be null or empty.", nameof(exerciseName));
 
-        // Add a new exercise
-        public void AddExercise(Exercise exercise)
-        {
-            if (exercise == null)
-                throw new ArgumentNullException(nameof(exercise), "Exercise cannot be null.");
-
-            _exercises.Add(exercise);
-        }
-
-        // Get all exercises
-        public List<Exercise> GetAllExercises()
-        {
-            return _exercises;
-        }
-
-        // Get exercise by name
-        public Exercise GetExerciseByName(string name)
-        {
-            var exercise = _exercises.FirstOrDefault(e => e.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
-            if (exercise == null)
-                throw new KeyNotFoundException($"Exercise '{name}' not found.");
-
-            return exercise;
+            var routine = GetWorkoutRoutineById(routineId); // Ensures routine exists
+            _databaseManager.RemoveExerciseFromRoutine(routineId, exerciseName);
         }
 
         // Retrieve all workout routines
         public List<WorkoutRoutine> GetAllWorkoutRoutines()
         {
-            return _workoutRoutines;
+            return _databaseManager.GetAllWorkoutRoutines();
+        }
+
+        // Get all exercises for a workout routine
+        public List<string> GetExercisesForRoutine(int routineId)
+        {
+            return _databaseManager.GetExercisesForRoutine(routineId);
         }
     }
 }

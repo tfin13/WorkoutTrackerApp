@@ -9,23 +9,37 @@ namespace WorkoutTrackerAppGUI.Entities
     {
         // Attributes
         public int UserId { get; set; }
-        public string Username { get; private set; }
-        private string PasswordHash { get; set; }
-        public string Email { get; private set; }
+        public string Username { get; set; } // Made setter public for database operations
+        public string PasswordHash { get; private set; } // Made getter public for secure access
+        public string Email { get; set; } // Made setter public for database operations
 
         // Constructor
         public User(string username, string passwordHash, string email)
         {
-            if (!IsValidEmail(email))
+            Console.WriteLine($"User Constructor Called - Username: '{username}', Email: '{email}', PasswordHash: '{passwordHash}'");
+
+            if (string.IsNullOrWhiteSpace(email))
+            {
+                Console.WriteLine("Email is null or empty.");
                 throw new ArgumentException("Invalid email format.");
-            if (string.IsNullOrWhiteSpace(username) || username.Length < 3)
-                throw new ArgumentException("Username must be at least 3 characters.");
+            }
+
+            email = email.Trim(); // Trim leading/trailing spaces
+            Console.WriteLine($"Trimmed Email: '{email}'");
+
+            if (!IsValidEmail(email))
+            {
+                Console.WriteLine("Email validation failed.");
+                throw new ArgumentException("Invalid email format.");
+            }
 
             Username = username;
+            PasswordHash = passwordHash;
             Email = email;
-            PasswordHash = passwordHash; // Expecting a pre-hashed password
         }
 
+        // Parameterless Constructor (Needed for database mapping)
+        public User() { }
 
         // Register new user with raw password
         public static User Register(string username, string password, string email)
@@ -67,24 +81,42 @@ namespace WorkoutTrackerAppGUI.Entities
 
         // Helper Methods
 
-        private static string HashPassword(string password)
+        public static string HashPassword(string password)
         {
-            using (SHA256 sha256 = SHA256.Create())
+            using (var sha256 = SHA256.Create())
             {
                 byte[] bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
                 return Convert.ToBase64String(bytes);
             }
         }
 
-        public bool VerifyPassword(string password)
+        public void SetPasswordHash(string passwordHash)
         {
-            // Publicly accessible for password verification
-            return HashPassword(password) == PasswordHash;
+            PasswordHash = passwordHash;
         }
 
-        private static bool IsValidEmail(string email)
+
+        public bool VerifyPassword(string password)
         {
-            return Regex.IsMatch(email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$");
+            string hashedInput = HashPassword(password);
+            Console.WriteLine($"Input Password Hash: {hashedInput}");
+            Console.WriteLine($"Stored Password Hash: {PasswordHash}");
+
+            return hashedInput == PasswordHash;
+        }
+        
+
+        public static bool IsValidEmail(string email)
+        {
+            if (string.IsNullOrWhiteSpace(email))
+            {
+                return false;
+            }
+
+            email = email.Trim();
+            bool isValid = Regex.IsMatch(email, @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$");
+            Console.WriteLine($"Validating Email: '{email}', Validation Result: {isValid}");
+            return isValid;
         }
 
         // Retrieve user profile information

@@ -19,7 +19,7 @@ namespace WorkoutTrackerAppGUI
         public WorkoutRoutineForm(DatabaseManager databaseManager)
         {
             InitializeComponent();
-            _databaseManager = databaseManager;
+            _databaseManager = databaseManager ?? throw new ArgumentNullException(nameof(databaseManager));
 
             // Link the load event to the WorkoutRoutineForm_Load method
             this.Load += WorkoutRoutineForm_Load;

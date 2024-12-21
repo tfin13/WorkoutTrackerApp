@@ -14,7 +14,7 @@ namespace WorkoutTrackerAppGUI
             Application.SetCompatibleTextRenderingDefault(false);
 
             // Replace with your actual connection string
-            string connectionString = "your_connection_string_here";
+            string connectionString = "Server=TREVOR4070;Database=WorkoutTrackerDB;Trusted_Connection=True;";
 
             // Create a single instance of DatabaseManager
             var databaseManager = new DatabaseManager(connectionString);
